@@ -5,6 +5,7 @@
   Time: 9:21 AM
   To change this template use File | Settings | File Templates.
 --%>
+<%@ page isELIgnored="false" %>
 <!DOCTYPE html>
 <html>
 <head>
