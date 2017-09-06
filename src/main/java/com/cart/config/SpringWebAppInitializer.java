@@ -1,5 +1,8 @@
 package com.cart.config;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -13,7 +16,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 public class SpringWebAppInitializer implements WebApplicationInitializer {
 
-    @Override
+//    @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
         appContext.register(ApplicationContextConfig.class);
@@ -36,7 +39,7 @@ public class SpringWebAppInitializer implements WebApplicationInitializer {
 
         fr.setInitParameter("encoding", "UTF-8");
         fr.setInitParameter("forceEncoding", "true");
-        fr.addMappingForUrlPatterns(null, true, "/*");
+        fr.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
     }
 
 }
