@@ -61,7 +61,7 @@
         Customer Info</a>
 
     <!-- Send/Save -->
-    <input type="submit" value="Send" class="button-send-sc" />
+    <input type="submit" value="Place Your Order" class="button-send-sc" />
 </form>
 
 <div class="container">

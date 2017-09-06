@@ -74,8 +74,7 @@
         <div style="clear: both"></div>
         <input class="button-update-sc" type="submit" value="Update Quantity" />
         <a class="navi-item"
-           href="${pageContext.request.contextPath}/shoppingCartCustomer">Enter
-            Customer Info</a>
+           href="${pageContext.request.contextPath}/shoppingCartCustomer">Proceed to Checkout</a>
         <a class="navi-item"
            href="${pageContext.request.contextPath}/productList">Continue
             Buy</a>
