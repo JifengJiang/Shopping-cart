@@ -12,8 +12,6 @@
 
 <div class="footer-container">
 
-    @Copy right <a href="http://o7planning.org" target="_blank">o7planning.org</a>
-    <br>
-    See more <a>demo</a>
+    <a href="http://www.kiwinano.info" target="_blank">Kiwinano</a>
 
 </div>
