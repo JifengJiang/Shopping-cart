@@ -33,7 +33,7 @@ public class ChargeDAOImpl implements ChargeDAO{
 		ChargeInfo chargeInfo =new ChargeInfo();
 		 chargeInfo.setId(charge.getId());
 		 chargeInfo.setAmount(charge.getAmount());
-		 chargeInfo.setCreateDate(charge.getCreateDate());
+//		 chargeInfo.setCreateDate(charge.getCreateDate());
 		 chargeInfo.setObject(charge.getObject());
 		 this.sessionFactory.getCurrentSession().persist(chargeInfo);
 		 this.sessionFactory.getCurrentSession().flush();

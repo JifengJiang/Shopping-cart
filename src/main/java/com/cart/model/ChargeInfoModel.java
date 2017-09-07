@@ -7,14 +7,14 @@ public class ChargeInfoModel {
 	private String id;
 	private String object;
 	private int amount;
-	private Date createDate;
 	
-	public ChargeInfoModel(String id, String object, int amount, Date createDate)
+	
+	public ChargeInfoModel(String id, String object, int amount)
 	{
 		this.id = id;
 		this.object = object;
 		this.amount = amount;
-		this.createDate = createDate;
+		
 	}
 	
 	public String getId() {
@@ -35,11 +35,6 @@ public class ChargeInfoModel {
 	public void setAmount(int amount) {
 		this.amount = amount;
 	}
-	public Date getCreateDate() {
-		return createDate;
-	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
+	
 	
 }

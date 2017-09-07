@@ -23,20 +23,11 @@ public class ChargeInfo {
 	@Column(name = "amount", length = 11, nullable = false)
 	private int amount;
 
-	 @Temporal(TemporalType.TIMESTAMP)
-	 @Column(name = "Create_Date", nullable = false)
-	private Date createDate;
 	
 	 
 	 
 	 
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
+	
 
 	public String getId() {
 		return id;

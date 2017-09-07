@@ -381,7 +381,7 @@ public class MainController {
 			String object = charge.getObject();
 			long chargeAmount = charge.getAmount();
 			int amount= new Long(chargeAmount).intValue();
-			ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount, new Date());
+			ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount);
 //			chargeInfo.setAmount(amount);
 //			chargeInfo.setId(chargeId);
 //			chargeInfo.setObject(object);
