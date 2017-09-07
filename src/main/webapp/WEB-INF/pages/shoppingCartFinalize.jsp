@@ -27,7 +27,7 @@
 
 <div class="container">
     <h3>Thank you for Order</h3>
-    Your order number is: ${lastOrderedCart.orderNum}
+    <%-- Your order number is: ${lastOrderedCart.orderNum} --%>
 </div>
 
 <jsp:include page="_footer.jsp" />

@@ -1,24 +1,39 @@
 package com.cart.controller;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cart.dao.ChargeDAO;
 import com.cart.dao.OrderDAO;
 import com.cart.dao.ProductDAO;
+import com.cart.entity.ChargeInfo;
 import com.cart.entity.Product;
 import com.cart.model.CartInfo;
+import com.cart.model.CartLineInfo;
+import com.cart.model.ChargeInfoModel;
 import com.cart.model.CustomerInfo;
 import com.cart.model.PaginationResult;
 import com.cart.model.ProductInfo;
 import com.cart.util.Utils;
 import com.cart.validator.CustomerInfoValidator;
+import com.google.gson.Gson;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -37,12 +52,30 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @EnableWebMvc
 public class MainController {
 
+	/*
+	 * pay
+	 * */
+	
+	private static final String CHARGE_CURRENCY = "cad";
+	private int amount;
+	 private String checkFine="success";
+	 private String checkFaile="faile";
+	 
+	 //for testing purpose
+	 private String publicApiKey="pk_test_JUC987jX645xP9rX8oUNu3LY";
+	 private String secretApiKey="sk_test_DkYIH4LZPnTgnzpjiZmMHX9J";
+	
+	
+	
     @Autowired
     private OrderDAO orderDAO;
 
     @Autowired
     private ProductDAO productDAO;
 
+    @Autowired
+   private ChargeDAO chargeDao;
+    
     @Autowired
     private CustomerInfoValidator customerInfoValidator;
 
@@ -228,7 +261,8 @@ public class MainController {
     @Transactional(propagation = Propagation.NEVER)
     public String shoppingCartConfirmationSave(HttpServletRequest request, Model model) {
         CartInfo cartInfo = Utils.getCartInSession(request);
-
+        String productId ="";
+        double productAmount=0.0;
         // Cart have no products.
         if (cartInfo.isEmpty()) {
             // Redirect to shoppingCart page.
@@ -238,19 +272,39 @@ public class MainController {
             return "redirect:/shoppingCartCustomer";
         }
         try {
-            orderDAO.saveOrder(cartInfo);
+        	//begin to process pay
+        	List<CartLineInfo> cartInfos= cartInfo.getCartLines();
+        	
+        	for(CartLineInfo singleInfo:cartInfos)
+        	{
+        		productId = singleInfo.getProductInfo().getCode();
+        		Product product = new Product();
+        		product = productDAO.findProduct(productId);
+        		productAmount = product.getPrice();
+        		amount = (int)((Math.ceil(productAmount))*100);
+        	}
+//        	Map<String, Object> item = new HashMap<String, Object>();
+//    		item.put("publishable_key", publicApiKey);
+//    		item.put("amount", amount);
+//    		item.put("currency", CHARGE_CURRENCY);
+    		model.addAttribute("publishable_key", publicApiKey);
+    		model.addAttribute("amount", amount);
+    		model.addAttribute("currency", CHARGE_CURRENCY);
+//            orderDAO.saveOrder(cartInfo);
         } catch (Exception e) {
             // Need: Propagation.NEVER?
             return "shoppingCartConfirmation";
         }
-        // Remove Cart In Session.
-        Utils.removeCartInSession(request);
-
-        // Store Last ordered cart to Session.
-        Utils.storeLastOrderedCartInSession(request, cartInfo);
-
+//        // Remove Cart In Session.
+//        Utils.removeCartInSession(request);
+//
+//        // Store Last ordered cart to Session.
+//        Utils.storeLastOrderedCartInSession(request, cartInfo);
+        
+        return "CheckoutDemo";
+        
         // Redirect to successful page.
-        return "redirect:/shoppingCartFinalize";
+//        return "redirect:/shoppingCartFinalize";
     }
 
     @RequestMapping(value = { "/shoppingCartFinalize" }, method = RequestMethod.GET)
@@ -279,4 +333,76 @@ public class MainController {
         response.getOutputStream().close();
     }
 
+    
+    @RequestMapping(value = { "/chargeImmediately" }, method = RequestMethod.POST)
+	public String stripe(@RequestParam Map<String, String> request,  ModelMap model, HttpServletResponse response)
+	{
+		String token = request.get("stripeToken");
+		String status="";
+		String check="";
+		String afterMD5=Encreption.string2MD5(checkFine);
+		if (token != null) {
+			status=chargeImmediately(request, token,response);
+		}
+		check=Encreption.convertMD5(status);
+		if (check.equals(afterMD5)) {
+			return "shoppingCartFinalize";
+		}else
+		{
+			return"redirect:/shoppingCart";
+		}
+//		model.addAttribute("cur", "eur");
+//		model.addAttribute("amt", "100000");
+		
+	}
+    
+    private String chargeImmediately(Map<String, String> request, String token, HttpServletResponse responese)
+	{
+//		ModelAndView mvc = new ModelAndView();
+		
+		Map<String, Object> item = new HashMap<String, Object>();
+		String success = "system/online/success";
+		String faile = "system/online/faile";
+		Stripe.apiKey = "sk_test_DkYIH4LZPnTgnzpjiZmMHX9J";
+		Gson gson = new Gson();
+		try {
+//			RequestOptions requestOptions = RequestOptions.builder().setApiKey("YOUR-SECRET-KEY").build();
+//			String token = request.getParameter("stripeToken");
+
+			// Charge the user's card:
+			Map<String, Object> params = new HashMap<String, Object>();
+			//find a way to get amount from post request 
+			params.put("amount", amount);
+			params.put("currency", CHARGE_CURRENCY);
+			params.put("description", "Example charge");
+			params.put("source", token);
+			Charge charge = Charge.create(params);
+			String chargeId = charge.getId();
+			String object = charge.getObject();
+			long chargeAmount = charge.getAmount();
+			int amount= new Long(chargeAmount).intValue();
+			ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount, new Date());
+//			chargeInfo.setAmount(amount);
+//			chargeInfo.setId(chargeId);
+//			chargeInfo.setObject(object);
+//			chargeInfo.setCreateDate(new Date());
+			chargeDao.saveCharge(chargeInfo);
+			/*LOG.info("Payment charged to the following account: " + request);
+			LOG.debug("Charge: " + charge);*/
+//			model.put("charge_id", charge.getId());
+//			mvc.setViewName("success");
+//			mvc.addObject("success", item) ;
+			
+			return Encreption.convertMD5(Encreption.string2MD5(checkFine));
+		} catch (StripeException  e) {
+//			item.put("error", e.getMessage());
+//			LOG.error("Payment declined for account: " + request);
+//			mvc.setViewName("faile");
+//			mvc.addObject("error",e.getMessage()) ;
+//			model("error", e.getMessage());
+			return Encreption.convertMD5(Encreption.string2MD5(checkFaile));
+		}
+		// Token is created using Stripe.js or Checkout!
+		// Get the payment token ID submitted by the form:
+	}
 }

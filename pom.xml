@@ -187,7 +187,12 @@
     	<artifactId>spring-boot</artifactId>
     	<version>1.0.0.RELEASE</version>
 		</dependency>
-
+		<!-- Stripe -->
+	<dependency>
+			  <groupId>com.stripe</groupId>
+			  <artifactId>stripe-java</artifactId>
+			  <version>5.8.0</version>
+	</dependency>
     </dependencies>
 
 

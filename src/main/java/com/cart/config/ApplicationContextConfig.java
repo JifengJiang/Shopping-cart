@@ -4,9 +4,11 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import com.cart.dao.AccountDAO;
+import com.cart.dao.ChargeDAO;
 import com.cart.dao.OrderDAO;
 import com.cart.dao.ProductDAO;
 import com.cart.dao.impl.AccountDAOImpl;
+import com.cart.dao.impl.ChargeDAOImpl;
 import com.cart.dao.impl.OrderDAOImpl;
 import com.cart.dao.impl.ProductDAOImpl;
 import org.hibernate.SessionFactory;
@@ -131,5 +133,10 @@ public class ApplicationContextConfig {
     public AccountDAO getAccountDAO()  {
         return new AccountDAOImpl();
     }
-
+    
+    @Bean(name = "chargeDao")
+    public ChargeDAO getChargeDAO()
+    {
+    	return new ChargeDAOImpl();
+    }
 }
