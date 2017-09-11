@@ -1,6 +1,7 @@
 package com.cart.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.cart.dao.ChargeDAO;
 import com.cart.dao.OrderDAO;
 import com.cart.dao.ProductDAO;
+import com.cart.dao.UserDAO;
 import com.cart.entity.ChargeInfo;
 import com.cart.entity.Product;
+import com.cart.entity.UserInfo;
 import com.cart.model.CartInfo;
 import com.cart.model.CartLineInfo;
 import com.cart.model.ChargeInfoModel;
@@ -44,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.WebUtils;
 
 @Controller
 // Enable Hibernate Transaction.
@@ -58,6 +62,7 @@ public class MainController {
 	
 	private static final String CHARGE_CURRENCY = "cad";
 	private int amount;
+//	private List<Integer> userId =new ArrayList<Integer>();
 	 private String checkFine="success";
 	 private String checkFaile="faile";
 	 
@@ -65,7 +70,8 @@ public class MainController {
 	 private String publicApiKey="pk_test_JUC987jX645xP9rX8oUNu3LY";
 	 private String secretApiKey="sk_test_DkYIH4LZPnTgnzpjiZmMHX9J";
 	
-	
+	@Autowired
+	private UserDAO userDao;
 	
     @Autowired
     private OrderDAO orderDAO;
@@ -220,7 +226,7 @@ public class MainController {
                                            Model model, //
                                            @ModelAttribute("customerForm") @Validated CustomerInfo customerForm, //
                                            BindingResult result, //
-                                           final RedirectAttributes redirectAttributes) {
+                                           final RedirectAttributes redirectAttributes, HttpServletResponse response) {
 
         // If has Errors.
         if (result.hasErrors()) {
@@ -231,11 +237,23 @@ public class MainController {
 
         customerForm.setValid(true);
         CartInfo cartInfo = Utils.getCartInSession(request);
-
-        cartInfo.setCustomerInfo(customerForm);
-
-        // Redirect to Confirmation page.
-        return "redirect:/shoppingCartConfirmation";
+        userDao.saveInfomation(customerForm);
+        List<UserInfo> users = userDao.getUserId(customerForm);
+        if (users.size()==0) {
+			return"shoppingCartCustomer";
+		}else
+		{
+			 cartInfo.setCustomerInfo(customerForm);
+			 UserInfo user = users.get(0);
+			 int userId = user.getId();
+			 
+		        response.addCookie(new Cookie("userId", Integer.toString(userId)));
+//		        model.addAttribute("userInfo", customerForm);
+		        // Redirect to Confirmation page.
+		        return "redirect:/shoppingCartConfirmation";
+		}
+//        userId = userDao.getUserId(customerForm);
+       
     }
 
     // GET: Review Cart to confirm.
@@ -335,14 +353,18 @@ public class MainController {
 
     
     @RequestMapping(value = { "/chargeImmediately" }, method = RequestMethod.POST)
-	public String stripe(@RequestParam Map<String, String> request,  ModelMap model, HttpServletResponse response)
+	public String stripe(@RequestParam Map<String, String> request,  ModelMap model, HttpServletResponse response, HttpServletRequest httpRequest)
 	{
 		String token = request.get("stripeToken");
 		String status="";
 		String check="";
 		String afterMD5=Encreption.string2MD5(checkFine);
+		Cookie idCookie = WebUtils.getCookie(httpRequest, "userId");
+		String userId = idCookie.getValue();
+		int id = Integer.valueOf(userId);
+		CustomerInfo userInfo = (CustomerInfo)model.get("userInfo");
 		if (token != null) {
-			status=chargeImmediately(request, token,response);
+			status=chargeImmediately(request, token,response, id);
 		}
 		check=Encreption.convertMD5(status);
 		if (check.equals(afterMD5)) {
@@ -356,7 +378,7 @@ public class MainController {
 		
 	}
     
-    private String chargeImmediately(Map<String, String> request, String token, HttpServletResponse responese)
+    private String chargeImmediately(Map<String, String> request, String token, HttpServletResponse responese, int id)
 	{
 //		ModelAndView mvc = new ModelAndView();
 		
@@ -381,12 +403,18 @@ public class MainController {
 			String object = charge.getObject();
 			long chargeAmount = charge.getAmount();
 			int amount= new Long(chargeAmount).intValue();
-			ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount);
+//			List<Integer> userIds = userDao.getUserId(userInfo);
+//			for(int userId: userIds)
+//			{
+				ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount, id);
+				chargeDao.saveCharge(chargeInfo);
+//			}
+			
 //			chargeInfo.setAmount(amount);
 //			chargeInfo.setId(chargeId);
 //			chargeInfo.setObject(object);
 //			chargeInfo.setCreateDate(new Date());
-			chargeDao.saveCharge(chargeInfo);
+			
 			/*LOG.info("Payment charged to the following account: " + request);
 			LOG.debug("Charge: " + charge);*/
 //			model.put("charge_id", charge.getId());

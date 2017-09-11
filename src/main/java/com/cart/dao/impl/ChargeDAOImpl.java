@@ -3,9 +3,11 @@ package com.cart.dao.impl;
 import java.util.Date;
 
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +32,24 @@ public class ChargeDAOImpl implements ChargeDAO{
 
 	@Override
 	public void saveCharge(ChargeInfoModel charge) {
-		ChargeInfo chargeInfo =new ChargeInfo();
-		 chargeInfo.setId(charge.getId());
-		 chargeInfo.setAmount(charge.getAmount());
-//		 chargeInfo.setCreateDate(charge.getCreateDate());
-		 chargeInfo.setObject(charge.getObject());
-		 this.sessionFactory.getCurrentSession().persist(chargeInfo);
-		 this.sessionFactory.getCurrentSession().flush();
+		
+		Session session = this.sessionFactory.getCurrentSession();
+		String id = charge.getId();
+		String object = charge.getObject();
+		int amount = charge.getAmount();
+		int user_id = charge.getUser_id();
+		String sql = "insert into chargeInfo(id, object, amount, user_id) values ( '"+id+"' , '"+object+"' , "+ amount+", "+ user_id+")";
+//		ChargeInfo chargeInfo =new ChargeInfo();
+//		 chargeInfo.setId(charge.getId());
+//		 chargeInfo.setAmount(charge.getAmount());
+////		 chargeInfo.setCreateDate(charge.getCreateDate());
+//		 chargeInfo.setObject(charge.getObject());
+//		 chargeInfo.setUser_id(charge.getUser_id());
+		SQLQuery sqlQuery = session.createSQLQuery(sql); 
+		sqlQuery.executeUpdate();
+//		sqlQuery.setResultTransformer(Transformers.aliasToBean(ChargeInfo.class));
+//		 this.sessionFactory.getCurrentSession().persist(chargeInfo);
+//		 this.sessionFactory.getCurrentSession().flush();
 		 
 		
 	}

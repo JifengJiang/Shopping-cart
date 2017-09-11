@@ -7,10 +7,13 @@ import com.cart.dao.AccountDAO;
 import com.cart.dao.ChargeDAO;
 import com.cart.dao.OrderDAO;
 import com.cart.dao.ProductDAO;
+import com.cart.dao.UserDAO;
 import com.cart.dao.impl.AccountDAOImpl;
 import com.cart.dao.impl.ChargeDAOImpl;
 import com.cart.dao.impl.OrderDAOImpl;
 import com.cart.dao.impl.ProductDAOImpl;
+import com.cart.dao.impl.UserDAOImpl;
+
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -138,5 +141,11 @@ public class ApplicationContextConfig {
     public ChargeDAO getChargeDAO()
     {
     	return new ChargeDAOImpl();
+    }
+    
+    @Bean(name = "UserDAO")
+    public UserDAO getUserDAO()
+    {
+    	return new UserDAOImpl();
     }
 }

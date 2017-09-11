@@ -4,7 +4,11 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,11 +27,20 @@ public class ChargeInfo {
 	@Column(name = "amount", length = 11, nullable = false)
 	private int amount;
 
+	 @ManyToOne(targetEntity = UserInfo.class)
+	    @JoinColumn(name = "user_id", nullable = false //
+//	    foreignKey = @ForeignKey(name = "User_id_FK") 
+	    )
+	private int user_id;
 	
-	 
-	 
-	 
-	
+
+	public int getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(int user_id) {
+		this.user_id = user_id;
+	}
 
 	public String getId() {
 		return id;
