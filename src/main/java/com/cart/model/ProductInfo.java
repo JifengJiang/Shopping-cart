@@ -7,6 +7,7 @@ public class ProductInfo {
     private String code;
     private String name;
     private double price;
+    private int stock;
 
     private boolean newProduct=false;
 
@@ -20,14 +21,14 @@ public class ProductInfo {
         this.code = product.getCode();
         this.name = product.getName();
         this.price = product.getPrice();
+        this.stock = product.getStock();
     }
 
-    // Không thay đổi Constructor này,
-    // nó được sử dụng trong Hibernate query.
-    public ProductInfo(String code, String name, double price) {
+    public ProductInfo(String code, String name, double price, int stock) {
         this.code = code;
         this.name = name;
         this.price = price;
+        this.stock = stock;
     }
 
     public String getCode() {
@@ -70,4 +71,13 @@ public class ProductInfo {
         this.newProduct = newProduct;
     }
 
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+    
 }

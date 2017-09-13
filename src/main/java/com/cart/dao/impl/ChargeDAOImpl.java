@@ -39,12 +39,6 @@ public class ChargeDAOImpl implements ChargeDAO{
 		int amount = charge.getAmount();
 		int user_id = charge.getUser_id();
 		String sql = "insert into chargeInfo(id, object, amount, user_id) values ( '"+id+"' , '"+object+"' , "+ amount+", "+ user_id+")";
-//		ChargeInfo chargeInfo =new ChargeInfo();
-//		 chargeInfo.setId(charge.getId());
-//		 chargeInfo.setAmount(charge.getAmount());
-////		 chargeInfo.setCreateDate(charge.getCreateDate());
-//		 chargeInfo.setObject(charge.getObject());
-//		 chargeInfo.setUser_id(charge.getUser_id());
 		SQLQuery sqlQuery = session.createSQLQuery(sql); 
 		sqlQuery.executeUpdate();
 //		sqlQuery.setResultTransformer(Transformers.aliasToBean(ChargeInfo.class));

@@ -38,6 +38,7 @@
                      src="${pageContext.request.contextPath}/productImage?code=${prodInfo.code}" /></li>
             <li>Code: ${prodInfo.code}</li>
             <li>Name: ${prodInfo.name}</li>
+            <li>Stock: ${prodInfo.stock}</li>
             <li>Price: <fmt:formatNumber value="${prodInfo.price}" type="currency"/></li>
             <li><a
                     href="${pageContext.request.contextPath}/buyProduct?code=${prodInfo.code}">

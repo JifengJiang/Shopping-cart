@@ -59,6 +59,19 @@ public class ApplicationContextConfig {
         return viewResolver;
     }
 
+    
+//    @Bean
+//    public JpaTransactionManager transactionManager() {
+//            JpaTransactionManager transactionManager = new JpaTransactionManager();
+//            transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+//            return transactionManager;
+//    }
+    
+//    @Bean
+//    public FooRepository fooRepository() {
+//        // configure and return a class having @Transactional methods
+//        return new JdbcFooRepository(dataSource());
+//    }
     // Config for Upload.
 //    @Bean(name = "multipartResolver")
 //    public CommonsMultipartResolver multipartResolver() {
@@ -105,7 +118,7 @@ public class ApplicationContextConfig {
         factoryBean.afterPropertiesSet();
         //
         SessionFactory sf = factoryBean.getObject();
-        System.out.println("## getSessionFactory: " + sf);
+//        System.out.println("## getSessionFactory: " + sf);
         return sf;
     }
 

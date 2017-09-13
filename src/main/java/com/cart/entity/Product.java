@@ -21,7 +21,9 @@ public class Product implements Serializable {
     private String name;
     private double price;
     private byte[] image;
-
+    @Column(name = "stock", nullable = false, length=11)
+    private int stock;
+    
     // For sort.
     private Date createDate;
 
@@ -76,4 +78,14 @@ public class Product implements Serializable {
         this.image = image;
     }
 
+    
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+    
 }

@@ -35,7 +35,7 @@ public class ProductDAOImpl implements ProductDAO {
         if (product == null) {
             return null;
         }
-        return new ProductInfo(product.getCode(), product.getName(), product.getPrice());
+        return new ProductInfo(product.getCode(), product.getName(), product.getPrice(), product.getStock());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ProductDAOImpl implements ProductDAO {
             this.sessionFactory.getCurrentSession().persist(product);
         }
         // If error in DB, Exceptions will be thrown out immediately
-        // Nếu có lỗi tại DB, ngoại lệ sẽ ném ra ngay lập tức
+
         this.sessionFactory.getCurrentSession().flush();
     }
 
@@ -75,7 +75,7 @@ public class ProductDAOImpl implements ProductDAO {
     public PaginationResult<ProductInfo> queryProducts(int page, int maxResult, int maxNavigationPage,
                                                        String likeName) {
         String sql = "Select new " + ProductInfo.class.getName() //
-                + "(p.code, p.name, p.price) " + " from "//
+                + "(p.code, p.name, p.price, p.stock) " + " from "//
                 + Product.class.getName() + " p ";
         if (likeName != null && likeName.length() > 0) {
             sql += " Where lower(p.name) like :likeName ";
@@ -96,4 +96,5 @@ public class ProductDAOImpl implements ProductDAO {
         return queryProducts(page, maxResult, maxNavigationPage, null);
     }
 
+    
 }
