@@ -48,8 +48,24 @@
     </ul>
 </div>
 
+<%--<form method="POST"--%>
+      <%--action="${pageContext.request.contextPath}/shoppingCartConfirmation">--%>
+
+    <%--<!-- Edit Cart -->--%>
+    <%--<a class="navi-item"--%>
+       <%--href="${pageContext.request.contextPath}/shoppingCart">Edit Cart</a>--%>
+
+    <%--<!-- Edit Customer Info -->--%>
+    <%--<a class="navi-item"--%>
+       <%--href="${pageContext.request.contextPath}/shoppingCartCustomer">Edit--%>
+        <%--Customer Info</a>--%>
+
+    <%--<!-- Send/Save -->--%>
+    <%--<input type="submit" value="Place Your Order" class="button-send-sc" />--%>
+<%--</form>--%>
+
 <form method="POST"
-      action="${pageContext.request.contextPath}/shoppingCartConfirmation">
+      action="${pageContext.request.contextPath}/chargeImmediately">
 
     <!-- Edit Cart -->
     <a class="navi-item"
@@ -60,8 +76,18 @@
        href="${pageContext.request.contextPath}/shoppingCartCustomer">Edit
         Customer Info</a>
 
-    <!-- Send/Save -->
-    <input type="submit" value="Place Your Order" class="button-send-sc" />
+    <script
+            src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="${publishable_key }"
+            data-amount="${ amount}"
+            data-name="Personal shopping cart"
+            data-description="Your Order"
+            data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+            data-zip-code="true"
+            data-billing-address="true"
+            data-locale="auto"
+            data-currency="cad">
+    </script>
 </form>
 
 <div class="container">
