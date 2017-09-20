@@ -1,6 +1,12 @@
 package com.cart.dao;
 
-public class BuyDAO {
+import com.cart.entity.Product;
+import com.cart.model.ProductInfo;
 
-//	public void 
+public interface BuyDAO {
+
+	public void buyProduct(ProductInfo product);
+	public int getAviableProductAmount(String code);
+	public int getAmountByLock(String code);
+	public Product getProductByLock(String code); 
 }

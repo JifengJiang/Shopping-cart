@@ -4,10 +4,12 @@ import com.cart.entity.Product;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class ProductInfo {
+	//the selected product model
+	
     private String code;
     private String name;
     private double price;
-    private int stock;
+    private int quantity;
 
     private boolean newProduct=false;
 
@@ -21,14 +23,14 @@ public class ProductInfo {
         this.code = product.getCode();
         this.name = product.getName();
         this.price = product.getPrice();
-        this.stock = product.getStock();
+        this.quantity = product.getStock();
     }
 
     public ProductInfo(String code, String name, double price, int stock) {
         this.code = code;
         this.name = name;
         this.price = price;
-        this.stock = stock;
+        this.quantity = stock;
     }
 
     public String getCode() {
@@ -71,12 +73,12 @@ public class ProductInfo {
         this.newProduct = newProduct;
     }
 
-	public int getStock() {
-		return stock;
+	public int getQuantity() {
+		return quantity;
 	}
 
-	public void setStock(int stock) {
-		this.stock = stock;
+	public void setQuantity(int stock) {
+		this.quantity = stock;
 	}
 
     
