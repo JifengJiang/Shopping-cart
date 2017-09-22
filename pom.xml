@@ -172,8 +172,14 @@
             <version>9.1-901-1.jdbc4</version>
         </dependency>
 
-
-
+		<!-- spring test -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-test</artifactId>
+		    <version>3.2.1.RELEASE</version>
+		    <scope>test</scope>
+		</dependency>
         <!-- Email validator,... -->
         <!-- http://mvnrepository.com/artifact/commons-validator/commons-validator -->
         <dependency>
