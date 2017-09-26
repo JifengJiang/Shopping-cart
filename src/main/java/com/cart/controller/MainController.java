@@ -358,7 +358,7 @@ public class MainController {
 		String token = request.get("stripeToken");
 		String status="";
 		String check="";
-		String afterMD5=Encreption.string2MD5(checkFine);
+		String afterMD5=Encryption.string2MD5(checkFine);
 		Cookie idCookie = WebUtils.getCookie(httpRequest, "userId");
 		String userId = idCookie.getValue();
 		int id = Integer.valueOf(userId);
@@ -366,7 +366,7 @@ public class MainController {
 		if (token != null) {
 			status=chargeImmediately(request, token,response, id);
 		}
-		check=Encreption.convertMD5(status);
+		check=Encryption.convertMD5(status);
 		if (check.equals(afterMD5)) {
 			return "shoppingCartFinalize";
 		}else
@@ -421,14 +421,14 @@ public class MainController {
 //			mvc.setViewName("success");
 //			mvc.addObject("success", item) ;
 			
-			return Encreption.convertMD5(Encreption.string2MD5(checkFine));
+			return Encryption.convertMD5(Encryption.string2MD5(checkFine));
 		} catch (StripeException  e) {
 //			item.put("error", e.getMessage());
 //			LOG.error("Payment declined for account: " + request);
 //			mvc.setViewName("faile");
 //			mvc.addObject("error",e.getMessage()) ;
 //			model("error", e.getMessage());
-			return Encreption.convertMD5(Encreption.string2MD5(checkFaile));
+			return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
 		}
 		// Token is created using Stripe.js or Checkout!
 		// Get the payment token ID submitted by the form:

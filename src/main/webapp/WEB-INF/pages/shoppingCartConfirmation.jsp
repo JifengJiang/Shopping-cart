@@ -48,23 +48,23 @@
     </ul>
 </div>
 
-<%--<form method="POST"--%>
-      <%--action="${pageContext.request.contextPath}/shoppingCartConfirmation">--%>
-
-    <%--<!-- Edit Cart -->--%>
-    <%--<a class="navi-item"--%>
-       <%--href="${pageContext.request.contextPath}/shoppingCart">Edit Cart</a>--%>
-
-    <%--<!-- Edit Customer Info -->--%>
-    <%--<a class="navi-item"--%>
-       <%--href="${pageContext.request.contextPath}/shoppingCartCustomer">Edit--%>
-        <%--Customer Info</a>--%>
-
-    <%--<!-- Send/Save -->--%>
-    <%--<input type="submit" value="Place Your Order" class="button-send-sc" />--%>
-<%--</form>--%>
-
 <form method="POST"
+      action="${pageContext.request.contextPath}/shoppingCartConfirmation">
+
+    <!-- Edit Cart -->
+    <a class="navi-item"
+       href="${pageContext.request.contextPath}/shoppingCart">Edit Cart</a>
+
+    <!-- Edit Customer Info -->
+    <a class="navi-item"
+       href="${pageContext.request.contextPath}/shoppingCartCustomer">Edit
+        Customer Info</a>
+
+    <!-- Send/Save -->
+    <input type="submit" value="Place Your Order" class="button-send-sc" />
+</form>
+
+<%-- <form method="POST"
       action="${pageContext.request.contextPath}/chargeImmediately">
 
     <!-- Edit Cart -->
@@ -88,7 +88,7 @@
             data-locale="auto"
             data-currency="cad">
     </script>
-</form>
+</form> --%>
 
 <div class="container">
 
