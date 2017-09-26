@@ -49,12 +49,12 @@ public class ShoppingCartTest extends BaseTest{
 			product.setCode("S001");
 			product.setName("Core Java");
 			product.setPrice(100.00);
-			product.setQuantity(4);
+			product.setStock(4);
 			ProductInfo product2 = new ProductInfo();
 			product2.setCode("S001");
 			product2.setName("Core Java");
 			product2.setPrice(100.00);
-			product2.setQuantity(4);
+			product2.setStock(4);
 //			amountLeft = buyDao.getAmountByLock("S001");
 //			buyDao.buyProduct(product);
 //			int amount2 = buyDao.getAmountByLock("S001");

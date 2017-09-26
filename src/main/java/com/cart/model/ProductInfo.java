@@ -9,7 +9,7 @@ public class ProductInfo {
     private String code;
     private String name;
     private double price;
-    private int quantity;
+    private int stock;
 
     private boolean newProduct=false;
 
@@ -23,14 +23,14 @@ public class ProductInfo {
         this.code = product.getCode();
         this.name = product.getName();
         this.price = product.getPrice();
-        this.quantity = product.getStock();
+        this.stock = product.getStock();
     }
 
     public ProductInfo(String code, String name, double price, int stock) {
         this.code = code;
         this.name = name;
         this.price = price;
-        this.quantity = stock;
+        this.stock = stock;
     }
 
     public String getCode() {
@@ -73,12 +73,12 @@ public class ProductInfo {
         this.newProduct = newProduct;
     }
 
-	public int getQuantity() {
-		return quantity;
+	public int getStock() {
+		return stock;
 	}
 
-	public void setQuantity(int stock) {
-		this.quantity = stock;
+	public void setStock(int stock) {
+		this.stock = stock;
 	}
 
     

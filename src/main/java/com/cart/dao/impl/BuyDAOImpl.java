@@ -27,7 +27,7 @@ public class BuyDAOImpl implements BuyDAO{
 	@Override
 	public void buyProduct(ProductInfo product) {//update stock for selected product
 		String code = product.getCode();
-		int quantity = product.getQuantity();
+		int quantity = product.getStock();
 		Session session = sessionFactory.getCurrentSession();
 		
 		String sql = "update Products set Stock = Stock- "+quantity+" where Code = '"+code+" ';";

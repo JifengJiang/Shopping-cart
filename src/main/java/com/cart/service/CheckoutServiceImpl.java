@@ -48,7 +48,7 @@ public class CheckoutServiceImpl implements CheckoutService{
 	public int buyProduct(ProductInfo product,int flag) {//valuate the quantities and amounts see wheather quantities > amount
 		int result=0;//init is 0, 1 is ok, 2 is faile
 		int amount = 0;
-		int selectedNumber = product.getQuantity();
+		int selectedNumber = product.getStock();
 		double price = 0.0;
 		int proPrice=0;
 		int totalPrice=0;
