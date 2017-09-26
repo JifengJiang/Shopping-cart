@@ -53,8 +53,8 @@ public class PaginationResult<E> {
         this.currentPage = pageIndex + 1;
         this.list = results;
         this.maxResult = maxResult;
-
-        this.totalPages = (this.totalRecords / this.maxResult) + 1;
+        
+        this.totalPages = (this.totalRecords % this.maxResult == 0) ? (this.totalRecords / this.maxResult) : ((this.totalRecords / this.maxResult) + 1);
         this.maxNavigationPage = maxNavigationPage;
 
         if (maxNavigationPage < totalPages) {

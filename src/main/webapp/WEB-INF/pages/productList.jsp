@@ -55,7 +55,6 @@
 </c:forEach>
 <br/>
 
-
 <c:if test="${paginationProducts.totalPages > 1}">
     <div class="page-navigator">
         <c:forEach items="${paginationProducts.navigationPages}" var = "page">
@@ -66,7 +65,6 @@
                 <span class="nav-item"> ... </span>
             </c:if>
         </c:forEach>
-
     </div>
 </c:if>
 
