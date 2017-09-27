@@ -24,11 +24,17 @@ import com.cart.model.ChargeInfoModel;
 import com.cart.model.CustomerInfo;
 import com.cart.model.PaginationResult;
 import com.cart.model.ProductInfo;
+import com.cart.service.CheckoutService;
 import com.cart.util.Utils;
 import com.cart.validator.CustomerInfoValidator;
 import com.google.gson.Gson;
 import com.stripe.Stripe;
+import com.stripe.exception.APIConnectionException;
+import com.stripe.exception.AuthenticationException;
+import com.stripe.exception.CardException;
+import com.stripe.exception.RateLimitException;
 import com.stripe.exception.StripeException;
+import com.stripe.exception.oauth.InvalidRequestException;
 import com.stripe.model.Charge;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +87,10 @@ public class MainController {
 
     @Autowired
    private ChargeDAO chargeDao;
+    
+    @Autowired
+    private CheckoutService ckService;
+    
     
     @Autowired
     private CustomerInfoValidator customerInfoValidator;
@@ -221,6 +231,7 @@ public class MainController {
     }
 
     // POST: Save customer information.
+//    @Transactional
     @RequestMapping(value = { "/shoppingCartCustomer" }, method = RequestMethod.POST)
     public String shoppingCartCustomerSave(HttpServletRequest request, //
                                            Model model, //
@@ -280,6 +291,7 @@ public class MainController {
     public String shoppingCartConfirmationSave(HttpServletRequest request, Model model) {
         CartInfo cartInfo = Utils.getCartInSession(request);
         String productId ="";
+        int quantity =0;
         double productAmount=0.0;
         // Cart have no products.
         if (cartInfo.isEmpty()) {
@@ -297,9 +309,12 @@ public class MainController {
         	{
         		productId = singleInfo.getProductInfo().getCode();
         		Product product = new Product();
+        		
+        		quantity = singleInfo.getQuantity();
         		product = productDAO.findProduct(productId);
+        		
         		productAmount = product.getPrice();
-        		amount = (int)((Math.ceil(productAmount))*100);
+        		amount += (int)((Math.ceil(productAmount))*100*quantity);
         	}
 //        	Map<String, Object> item = new HashMap<String, Object>();
 //    		item.put("publishable_key", publicApiKey);
@@ -308,7 +323,10 @@ public class MainController {
     		model.addAttribute("publishable_key", publicApiKey);
     		model.addAttribute("amount", amount);
     		model.addAttribute("currency", CHARGE_CURRENCY);
+//    		model.addAttribute("selectedPros", cartInfos);
+    		Utils.storeLastOrderedProductInSession(request, cartInfos);
 //            orderDAO.saveOrder(cartInfo);
+    		return "CheckoutDemo";
         } catch (Exception e) {
             // Need: Propagation.NEVER?
             return "shoppingCartConfirmation";
@@ -319,7 +337,6 @@ public class MainController {
 //        // Store Last ordered cart to Session.
 //        Utils.storeLastOrderedCartInSession(request, cartInfo);
         
-        return "CheckoutDemo";
         
         // Redirect to successful page.
 //        return "redirect:/shoppingCartFinalize";
@@ -351,7 +368,7 @@ public class MainController {
         response.getOutputStream().close();
     }
 
-    
+    @Transactional
     @RequestMapping(value = { "/chargeImmediately" }, method = RequestMethod.POST)
 	public String stripe(@RequestParam Map<String, String> request,  ModelMap model, HttpServletResponse response, HttpServletRequest httpRequest)
 	{
@@ -360,11 +377,12 @@ public class MainController {
 		String check="";
 		String afterMD5=Encryption.string2MD5(checkFine);
 		Cookie idCookie = WebUtils.getCookie(httpRequest, "userId");
+		List<CartLineInfo> selectedProducts = Utils.getLastOrderedProductInSession(httpRequest);
 		String userId = idCookie.getValue();
 		int id = Integer.valueOf(userId);
 		CustomerInfo userInfo = (CustomerInfo)model.get("userInfo");
 		if (token != null) {
-			status=chargeImmediately(request, token,response, id);
+			status=chargeImmediately(request, token,response, id, selectedProducts);
 		}
 		check=Encryption.convertMD5(status);
 		if (check.equals(afterMD5)) {
@@ -377,8 +395,8 @@ public class MainController {
 //		model.addAttribute("amt", "100000");
 		
 	}
-    
-    private String chargeImmediately(Map<String, String> request, String token, HttpServletResponse responese, int id)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public String chargeImmediately(Map<String, String> request, String token, HttpServletResponse responese, int id, List<CartLineInfo> selectedProducts)
 	{
 //		ModelAndView mvc = new ModelAndView();
 		
@@ -386,6 +404,7 @@ public class MainController {
 		String success = "system/online/success";
 		String faile = "system/online/faile";
 		Stripe.apiKey = "sk_test_DkYIH4LZPnTgnzpjiZmMHX9J";
+		int result =0;
 		Gson gson = new Gson();
 		try {
 //			RequestOptions requestOptions = RequestOptions.builder().setApiKey("YOUR-SECRET-KEY").build();
@@ -409,6 +428,17 @@ public class MainController {
 				ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount, id);
 				chargeDao.saveCharge(chargeInfo);
 //			}
+				for(CartLineInfo singleProduct: selectedProducts)
+				{
+					ProductInfo selectProduct = new ProductInfo();
+					selectProduct = singleProduct.getProductInfo();
+					selectProduct.setStock(singleProduct.getQuantity());
+					result=ckService.buyProduct(selectProduct, 1);
+					if (result==-1) {
+						throw  new Exception();
+						
+					}
+				}
 			
 //			chargeInfo.setAmount(amount);
 //			chargeInfo.setId(chargeId);
@@ -422,12 +452,36 @@ public class MainController {
 //			mvc.addObject("success", item) ;
 			
 			return Encryption.convertMD5(Encryption.string2MD5(checkFine));
-		} catch (StripeException  e) {
+		} catch (RateLimitException   e) {
 //			item.put("error", e.getMessage());
 //			LOG.error("Payment declined for account: " + request);
 //			mvc.setViewName("faile");
 //			mvc.addObject("error",e.getMessage()) ;
 //			model("error", e.getMessage());
+			System.out.println(e.getMessage());
+			return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
+		}catch (CardException  e) {
+			// TODO: handle exception
+			System.out.println("Status is: " + e.getCode());
+			  System.out.println("Message is: " + e.getMessage());
+			  return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
+		}catch (InvalidRequestException  e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
+		}catch (AuthenticationException  e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
+		}catch (APIConnectionException  e) {
+			System.out.println(e.getMessage());
+			return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
+		}catch(StripeException e)
+		{
+			System.out.println(e.getMessage());
+			return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
 			return Encryption.convertMD5(Encryption.string2MD5(checkFaile));
 		}
 		// Token is created using Stripe.js or Checkout!

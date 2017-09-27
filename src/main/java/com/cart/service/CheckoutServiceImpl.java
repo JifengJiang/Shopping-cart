@@ -25,7 +25,7 @@ public class CheckoutServiceImpl implements CheckoutService{
 	SessionFactory sessionFactory;
 	
 	
-	@Transactional(readOnly=true)
+	@Transactional
 	@Override
 	public int getAvalibleNumber(ProductInfo product) {
 		int amount =0;
@@ -52,59 +52,89 @@ public class CheckoutServiceImpl implements CheckoutService{
 		double price = 0.0;
 		int proPrice=0;
 		int totalPrice=0;
+		int daProductStock=0;
 		String code = product.getCode();
-		Session session = sessionFactory.getCurrentSession();
-		if (!session.getTransaction().isActive()) {
-			Transaction tx = session.beginTransaction();
+		Product daProduct = new Product();
+		daProduct = buyDAO.getProductByLock(code);
+		daProductStock = daProduct.getStock();
+//		Session session = sessionFactory.getCurrentSession();
+//		if (!session.getTransaction().isActive()) {
+//			Transaction tx = session.beginTransaction();
 			try {
 				amount = buyDAO.getAmountByLock(code);
 				if (selectedNumber<=amount) {
 					//这里需要有两部操作，1要更改数据库的库存2.需要算当前ID商品的总价
 					if (flag==1) {
-						
-						buyDAO.buyProduct(product);
+						daProductStock = daProductStock-selectedNumber;
+						daProduct.setStock(daProductStock);
+						buyDAO.buyProduct(daProduct);
+//						int a = 1/0;
+						result=1;
 					}else
 					{
-						throw new Exception();
+//						result=-1;
+						throw new RuntimeException();
 					}
 					
 //					pro = buyDAO.getProductByLock(code);
 //					price = pro.getPrice();
 //					proPrice= (int)((Math.ceil(price))*100);
 //					totalPrice = proPrice*selectedNumber;
-					if (tx.getStatus().equals(TransactionStatus.ACTIVE)) {
-						tx.commit();
-					}
+//					if (tx.getStatus().equals(TransactionStatus.ACTIVE)) {
+//						tx.commit();
+						
+//					}else
+//					{
+//						throw new Exception();
+//					}
 					
-					result=1;
+				
 				}
 			} catch (Exception e) {
-				tx.rollback();
+				
 				result=-1;
+				throw new RuntimeException();
 			}
-		}else
-		{
-			Transaction tx = session.getTransaction();
-			try {
-				if (selectedNumber<=amount) {
-					//这里需要有两部操作，1要更改数据库的库存2.需要算当前ID商品的总价
-					buyDAO.buyProduct(product);
-					
-//					pro = buyDAO.getProductByLock(code);
-//					price = pro.getPrice();
-//					proPrice= (int)((Math.ceil(price))*100);
-//					totalPrice = proPrice*selectedNumber;
-					if (tx.getStatus().equals(TransactionStatus.ACTIVE)) {
-						tx.commit();
-					}
-//					session.close();
-					result=1;
-				}
-			} catch (Exception e) {
-				tx.rollback();
-				result=-1;
-			}
-		}
+//	}
+//		else
+//		{
+//			Transaction tx = session.getTransaction();
+////			tx.begin();
+//			try {
+//				amount = buyDAO.getAmountByLock(code);
+//				if (selectedNumber<=amount) {
+//					//这里需要有两部操作，1要更改数据库的库存2.需要算当前ID商品的总价
+//					
+//					if (flag==1) {
+//							
+//							buyDAO.buyProduct(product);
+//							
+//						}else
+//						{
+//							throw new Exception();
+//						}
+//					
+//					
+////					pro = buyDAO.getProductByLock(code);
+////					price = pro.getPrice();
+////					proPrice= (int)((Math.ceil(price))*100);
+////					totalPrice = proPrice*selectedNumber;
+//					if (tx.getStatus().equals(TransactionStatus.ACTIVE)) {
+//						tx.commit();
+//						result=1;
+//					}else
+//					{
+//						throw new Exception();
+//					}
+////					session.close();
+//					
+//				}
+//			} catch (Exception e) {
+//				tx.rollback();
+//				result=-1;
+//				
+//			}
+//		}
 		
 //		Product pro = new Product();
 	

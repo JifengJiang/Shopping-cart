@@ -16,7 +16,7 @@ import com.cart.entity.ChargeInfo;
 import com.cart.model.ChargeInfoModel;
 
 
-@Transactional
+//@Transactional
 public class ChargeDAOImpl implements ChargeDAO{
 
 	 @Autowired

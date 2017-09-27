@@ -1,8 +1,11 @@
 package com.cart.util;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cart.model.CartInfo;
+import com.cart.model.CartLineInfo;
 
 public class Utils {
 
@@ -35,4 +38,13 @@ public class Utils {
         return (CartInfo) request.getSession().getAttribute("lastOrderedCart");
     }
 
+    public static void storeLastOrderedProductInSession(HttpServletRequest request, List<CartLineInfo> products) {
+        request.getSession().setAttribute("lastOrderedProducts", products);
+    }
+
+	public 	static List<CartLineInfo> getLastOrderedProductInSession(HttpServletRequest request)
+	{
+		return (List<CartLineInfo>)request.getSession().getAttribute("lastOrderedProducts");
+	}
+	
 }

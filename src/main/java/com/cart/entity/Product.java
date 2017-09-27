@@ -10,6 +10,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 @Table(name = "Products")
@@ -24,6 +25,10 @@ public class Product implements Serializable {
     @Column(name = "stock", nullable = false, length=11)
     private int stock;
     
+    @Version
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name ="version")
+    private Date version;
     // For sort.
     private Date createDate;
 
@@ -85,6 +90,14 @@ public class Product implements Serializable {
 
 	public void setStock(int stock) {
 		this.stock = stock;
+	}
+
+	public Date getVersion() {
+		return version;
+	}
+
+	public void setVersion(Date version) {
+		this.version = version;
 	}
 
     

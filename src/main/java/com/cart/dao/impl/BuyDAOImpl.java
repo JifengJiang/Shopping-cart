@@ -25,15 +25,17 @@ public class BuyDAOImpl implements BuyDAO{
 
 	
 	@Override
-	public void buyProduct(ProductInfo product) {//update stock for selected product
+	public void buyProduct(Product product) {//update stock for selected product
 		String code = product.getCode();
 		int quantity = product.getStock();
 		Session session = sessionFactory.getCurrentSession();
+		session.persist(product);
+		session.flush();
+//		String sql = "update Products set Stock = Stock- "+quantity+" where Code = '"+code+" ';";
 		
-		String sql = "update Products set Stock = Stock- "+quantity+" where Code = '"+code+" ';";
-		SQLQuery sqlQuery = session.createSQLQuery(sql); 
+//		SQLQuery sqlQuery = session.createSQLQuery(sql); 
 //		sqlQuery.setLockMode(code, LockMode.UPGRADE);
-		sqlQuery.executeUpdate();
+//		sqlQuery.executeUpdate();
 		
 	}
 
