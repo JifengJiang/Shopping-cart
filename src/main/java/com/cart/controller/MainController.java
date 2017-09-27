@@ -57,7 +57,7 @@ import org.springframework.web.util.WebUtils;
 
 @Controller
 // Enable Hibernate Transaction.
-@Transactional
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 // Need to use RedirectAttributes
 @EnableWebMvc
 public class MainController {
@@ -287,7 +287,7 @@ public class MainController {
     // POST: Send Cart (Save).
     @RequestMapping(value = { "/shoppingCartConfirmation" }, method = RequestMethod.POST)
     // Avoid UnexpectedRollbackException (See more explanations)
-    @Transactional(propagation = Propagation.NEVER)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String shoppingCartConfirmationSave(HttpServletRequest request, Model model) {
         CartInfo cartInfo = Utils.getCartInSession(request);
         String productId ="";
@@ -395,7 +395,7 @@ public class MainController {
 //		model.addAttribute("amt", "100000");
 		
 	}
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public String chargeImmediately(Map<String, String> request, String token, HttpServletResponse responese, int id, List<CartLineInfo> selectedProducts)
 	{
 //		ModelAndView mvc = new ModelAndView();
@@ -405,6 +405,7 @@ public class MainController {
 		String faile = "system/online/faile";
 		Stripe.apiKey = "sk_test_DkYIH4LZPnTgnzpjiZmMHX9J";
 		int result =0;
+		int finResult =0;
 		Gson gson = new Gson();
 		try {
 //			RequestOptions requestOptions = RequestOptions.builder().setApiKey("YOUR-SECRET-KEY").build();
@@ -417,27 +418,41 @@ public class MainController {
 			params.put("currency", CHARGE_CURRENCY);
 			params.put("description", "Example charge");
 			params.put("source", token);
-			Charge charge = Charge.create(params);
-			String chargeId = charge.getId();
-			String object = charge.getObject();
-			long chargeAmount = charge.getAmount();
-			int amount= new Long(chargeAmount).intValue();
-//			List<Integer> userIds = userDao.getUserId(userInfo);
-//			for(int userId: userIds)
-//			{
-				ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount, id);
-				chargeDao.saveCharge(chargeInfo);
+		
 //			}
+			
 				for(CartLineInfo singleProduct: selectedProducts)
 				{
 					ProductInfo selectProduct = new ProductInfo();
 					selectProduct = singleProduct.getProductInfo();
 					selectProduct.setStock(singleProduct.getQuantity());
 					result=ckService.buyProduct(selectProduct, 1);
-					if (result==-1) {
+					if (result==1) {
+						finResult=1;
+					}else
+					{
+						finResult=-1;
 						throw  new Exception();
 						
 					}
+					if (finResult==-1) {
+						break;
+					}
+				}
+				if (finResult==1) {
+					
+					Charge charge = Charge.create(params);
+					String chargeId = charge.getId();
+					String object = charge.getObject();
+					long chargeAmount = charge.getAmount();
+					int amount= new Long(chargeAmount).intValue();
+//						List<Integer> userIds = userDao.getUserId(userInfo);
+//						for(int userId: userIds)
+//						{
+					ChargeInfoModel chargeInfo = new ChargeInfoModel(chargeId, object,amount, id);
+					chargeDao.saveCharge(chargeInfo);
+				}else {
+					throw new Exception();
 				}
 			
 //			chargeInfo.setAmount(amount);

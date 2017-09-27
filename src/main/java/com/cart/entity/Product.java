@@ -25,10 +25,9 @@ public class Product implements Serializable {
     @Column(name = "stock", nullable = false, length=11)
     private int stock;
     
-    @Version
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name ="version")
-    private Date version;
+   
+    
+    private int version;
     // For sort.
     private Date createDate;
 
@@ -91,12 +90,13 @@ public class Product implements Serializable {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-
-	public Date getVersion() {
+	 @Version
+	 @Column(name="version",nullable = false )
+	public int getVersion() {
 		return version;
 	}
 
-	public void setVersion(Date version) {
+	public void setVersion(int version) {
 		this.version = version;
 	}
 

@@ -107,7 +107,7 @@ public class ApplicationContextConfig {
         properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
         properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
         properties.put("current_session_context_class", env.getProperty("current_session_context_class"));
-
+        properties.put("hibernate.connection.isolation", env.getProperty("hibernate.connection.isolation"));
 
         LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
 

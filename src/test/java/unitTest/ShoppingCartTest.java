@@ -27,7 +27,7 @@ public class ShoppingCartTest extends BaseTest{
 	CheckoutService ckService;
 	@Autowired
 	SessionFactory sf;
-	Transaction tx= null;
+	
 	
 	@Before
 	public void setUp() throws Exception
@@ -36,7 +36,7 @@ public class ShoppingCartTest extends BaseTest{
 	}
 	
 	@Test
-	@Transactional
+//	@Transactional
 	public void testUpdateTx()
 	{
 //		Session s1 = sf.openSession();
@@ -100,13 +100,14 @@ public class ShoppingCartTest extends BaseTest{
 //	@Transactional
 	public void test2()
 	{
+		Transaction tx;
 		Session s1 = sf.openSession();
 		Session s2 = sf.openSession();
 		int amountLeft=0;
 		Product product1 = s1.get(Product.class, "S001");
 		Product product2 = s2.get(Product.class, "S001");
-		tx = s2.beginTransaction();
-		tx = s1.beginTransaction();
+		s2.beginTransaction();
+		s1.beginTransaction();
 		System.out.println("----1---start---");
 		product1.setCode("S001");
 		product1.setName("Core Java");
@@ -114,8 +115,8 @@ public class ShoppingCartTest extends BaseTest{
 		product1.setStock(51);
 		product1.setCreateDate(new Date());
 		s1.update(product1);
-		tx.commit();
-		System.out.println("----1---end---");
+		s1.getTransaction().commit();
+		System.out.println("----1---end---"+"version="+product1.getVersion());
 		
 		System.out.println("----2---start---");
 		product2.setCode("S001");
@@ -124,7 +125,7 @@ public class ShoppingCartTest extends BaseTest{
 		product2.setStock(52);
 		product2.setCreateDate(new Date());
 		s2.update(product2);
-		tx.commit();
-		System.out.println("----2---end---");
+		s2.getTransaction().commit();
+		System.out.println("----2---end---"+"version="+product2.getVersion());
 	}
 }
